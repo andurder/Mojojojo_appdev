@@ -1,49 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'main.dart';
 
-class LetsMixPage extends StatefulWidget {
-  @override
-  _LetsMixPageState createState() => _LetsMixPageState();
-}
-
-class _LetsMixPageState extends State<LetsMixPage> {
-  final Random _random = Random();
-  final int maxAttempts = 72;
-  List<int> secretCode = [];
-  List<int> currentGuess = [];
-  int maxIngredients = 6; // Adjusts based on difficulty
-  String feedback = "";
-
-  void generateSecretCode(int length) {
-    List<int> symbols = List.generate(maxIngredients, (index) => index + 1);
-    symbols.shuffle(_random);
-    secretCode = symbols.sublist(0, length);
-  }
-
-  void checkGuess() {
-    int potionBottles = 0; // Correct ingredient and position
-    int emptyFlasks = 0; // Correct ingredient, wrong position
-
-    for (int i = 0; i < currentGuess.length; i++) {
-      if (currentGuess[i] == secretCode[i]) {
-        potionBottles++;
-      } else if (secretCode.contains(currentGuess[i])) {
-        emptyFlasks++;
-      }
-    }
-
-    setState(() {
-      feedback = "Potion Bottles: $potionBottles, Empty Flasks: $emptyFlasks";
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    generateSecretCode(4); // Default to Medium difficulty
-  }
-
+class LetsMixPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,57 +22,61 @@ class _LetsMixPageState extends State<LetsMixPage> {
             ),
             SizedBox(height: 16),
             Text(
-              feedback,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(maxIngredients, (index) {
-                return Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (currentGuess.length < secretCode.length) {
-                        setState(() {
-                          currentGuess.add(index + 1);
-                        });
-                      }
-                    },
-                    child: Text('${index + 1}'),
-                  ),
-                );
-              }),
+              'Potion Mix-Up is an engaging guessing game inspired by the classic Bulls and Cows concept. Players take on the role of an alchemist, trying to brew the perfect potion by guessing the correct combination of magical ingredients from a selection of six options.',
+              style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 16),
             Text(
-              'Your Guess: ${currentGuess.join(", ")}',
-              style: TextStyle(fontSize: 18),
+              'Difficulty Levels:',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              '• Easy (3 ingredients): Suitable for beginners.',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              '• Medium (4 ingredients): Standard challenge for most players.',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              '• Hard (6 ingredients): A complex puzzle for experienced gamers.',
+              style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                if (currentGuess.length == secretCode.length) {
-                  checkGuess();
-                  currentGuess.clear();
-                }
-              },
-              child: Text('Submit Guess'),
+            Text(
+              'Game Mechanics:',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  currentGuess.clear();
-                  generateSecretCode(4); // Regenerate the secret code
-                  feedback = "";
-                });
-              },
-              child: Text('Reset Game'),
+            SizedBox(height: 8),
+            Text(
+              'Each guess provides feedback through:',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              '• "Potion Bottles": Correct ingredient and position.',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              '• "Empty Flasks": Correct ingredient but wrong position.',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 24),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to game setup page (to be implemented)
+                },
+                child: Text('Start Brewing!'),
+              ),
             ),
           ],
         ),
