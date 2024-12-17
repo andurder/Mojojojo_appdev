@@ -3,19 +3,21 @@ import 'dart:math';
 import 'main.dart';
 
 class LetsMixPage extends StatelessWidget {
+  const LetsMixPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Let\'s Mix!')),
-      drawer: MainDrawer(),
+      appBar: AppBar(title: const Text('Let\'s Mix!')),
+      drawer: const MainDrawer(),
       body: SingleChildScrollView(
         // Fix for bottom overflow
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Potion Mix-Up: The Alchemist\'s Challenge',
                 style: TextStyle(
                   fontSize: 24,
@@ -23,13 +25,13 @@ class LetsMixPage extends StatelessWidget {
                   color: Colors.purple,
                 ),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Potion Mix-Up is an engaging guessing game inspired by the classic Bulls and Cows concept. Players take on the role of an alchemist, trying to brew the perfect potion by guessing the correct combination of magical ingredients from a selection of six options.',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Difficulty Levels:',
                 style: TextStyle(
                   fontSize: 20,
@@ -37,21 +39,21 @@ class LetsMixPage extends StatelessWidget {
                   color: Colors.purple,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 '• Easy (3 ingredients): Suitable for beginners.',
                 style: TextStyle(fontSize: 16),
               ),
-              Text(
+              const Text(
                 '• Medium (4 ingredients): Standard challenge for most players.',
                 style: TextStyle(fontSize: 16),
               ),
-              Text(
+              const Text(
                 '• Hard (6 ingredients): A complex puzzle for experienced gamers.',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Game Mechanics:',
                 style: TextStyle(
                   fontSize: 20,
@@ -59,29 +61,29 @@ class LetsMixPage extends StatelessWidget {
                   color: Colors.purple,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Each guess provides feedback through:',
                 style: TextStyle(fontSize: 16),
               ),
-              Text(
+              const Text(
                 '• "Potion Bottles": Correct ingredient and position.',
                 style: TextStyle(fontSize: 16),
               ),
-              Text(
+              const Text(
                 '• "Empty Flasks": Correct ingredient but wrong position.',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => GamePage()),
+                      MaterialPageRoute(builder: (context) => const GamePage()),
                     );
                   },
-                  child: Text('Start Brewing!'),
+                  child: const Text('Start Brewing!'),
                 ),
               ),
             ],
@@ -93,6 +95,8 @@ class LetsMixPage extends StatelessWidget {
 }
 
 class GamePage extends StatefulWidget {
+  const GamePage({super.key});
+
   @override
   _GamePageState createState() => _GamePageState();
 }
@@ -161,21 +165,21 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Potion Mix-Up Game')),
+      appBar: AppBar(title: const Text('Potion Mix-Up Game')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Difficulty: $selectedDifficulty',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.purple,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButton<String>(
               value: selectedDifficulty,
               items: ["Easy", "Medium", "Hard"].map((String value) {
@@ -190,21 +194,21 @@ class _GamePageState extends State<GamePage> {
                 }
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               feedback,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(maxIngredients, (index) {
                 return Padding(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: ElevatedButton(
                     onPressed: () {
                       if (currentGuess.length < secretCode.length) {
@@ -215,7 +219,7 @@ class _GamePageState extends State<GamePage> {
                     },
                     child: Column(
                       children: [
-                        Icon(Icons.science), // Placeholder icon
+                        const Icon(Icons.science), // Placeholder icon
                         Text('${index + 1}')
                       ],
                     ),
@@ -223,12 +227,12 @@ class _GamePageState extends State<GamePage> {
                 );
               }),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'Your Guess: ${currentGuess.join(", ")}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 if (currentGuess.length == secretCode.length) {
@@ -240,9 +244,9 @@ class _GamePageState extends State<GamePage> {
                   });
                 }
               },
-              child: Text('Submit Guess'),
+              child: const Text('Submit Guess'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -253,9 +257,9 @@ class _GamePageState extends State<GamePage> {
                   guessHistory.clear();
                 });
               },
-              child: Text('Reset Game'),
+              child: const Text('Reset Game'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 itemCount: guessHistory.length,

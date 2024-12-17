@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1084499599994",
+    "project_id": "potion-mixup",
+    "storage_bucket": "potion-mixup.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084499599994:android:fa4762e593be07103c11c3",
+        "android_client_info": {
+          "package_name": "com.potion.mix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzTXkhqrPonBxDJSWQ_wMgEJNUI4IczPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,22 +13,26 @@ import 'aboutus.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await Firebase.initializeApp(); // Initialize Firebase
-  runApp(PotionMixupApp());
+  runApp(const PotionMixupApp());
 }
 
 class PotionMixupApp extends StatelessWidget {
+  const PotionMixupApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Potion Mixup',
       theme: ThemeData(primarySwatch: Colors.purple),
-      home: SplashScreen(), // Initial screen
+      home: const SplashScreen(), // Initial screen
     );
   }
 }
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -37,10 +41,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () {
+    Timer(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LandingPage()),
+        MaterialPageRoute(builder: (context) => const LandingPage()),
       );
     });
   }
@@ -53,11 +57,11 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/logo.png', height: 150), // Placeholder for logo
-            SizedBox(height: 20),
-            Text('Potion Mixup',
+            const SizedBox(height: 20),
+            const Text('Potion Mixup',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            CircularProgressIndicator(),
+            const SizedBox(height: 10),
+            const CircularProgressIndicator(),
           ],
         ),
       ),
@@ -66,28 +70,30 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 class LandingPage extends StatelessWidget {
+  const LandingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Welcome to Potion Mixup!')),
-      drawer: MainDrawer(),
+      appBar: AppBar(title: const Text('Welcome to Potion Mixup!')),
+      drawer: const MainDrawer(),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Description placeholder for Potion Mixup.',
+              const Text('Description placeholder for Potion Mixup.',
                   style: TextStyle(fontSize: 16)),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
                   );
                 },
-                child: Text('Get Started'),
+                child: const Text('Get Started'),
               ),
             ],
           ),
@@ -98,13 +104,15 @@ class LandingPage extends StatelessWidget {
 }
 
 class MainDrawer extends StatelessWidget {
+  const MainDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          Container(
+          const SizedBox(
             height: 60,
             child: DrawerHeader(
               decoration: BoxDecoration(color: Colors.purple),
@@ -116,7 +124,7 @@ class MainDrawer extends StatelessWidget {
               ),
             ),
           ),
-          UserAccountsDrawerHeader(
+          const UserAccountsDrawerHeader(
             decoration: BoxDecoration(
               color: Color(0xFFF15590),
             ),
@@ -127,52 +135,53 @@ class MainDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage()),
+                MaterialPageRoute(builder: (context) => const HomePage()),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.science),
-            title: Text('Let\'s Mix!'),
+            leading: const Icon(Icons.science),
+            title: const Text('Let\'s Mix!'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LetsMixPage()),
+                MaterialPageRoute(builder: (context) => const LetsMixPage()),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text('Account'),
+            leading: const Icon(Icons.person),
+            title: const Text('Account'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => AccountPage()),
+                MaterialPageRoute(builder: (context) => const AccountPage()),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.leaderboard),
-            title: Text('Leaderboard'),
+            leading: const Icon(Icons.leaderboard),
+            title: const Text('Leaderboard'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LeaderboardPage()),
+                MaterialPageRoute(
+                    builder: (context) => const LeaderboardPage()),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.score),
-            title: Text('My Scores'),
+            leading: const Icon(Icons.score),
+            title: const Text('My Scores'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => MyScoresPage()),
+                MaterialPageRoute(builder: (context) => const MyScoresPage()),
               );
             },
             /* ADD HERE UNG ABOUT US BUT SA PINAKADULOOOOOOO */
