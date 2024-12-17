@@ -34,49 +34,11 @@ class AccountPage extends StatelessWidget {
             ),
             const SizedBox(height: 40),
 
-            // Highscores Section
-            const Text(
-              'Highscores',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Difficulty Scores
-            ListTile(
-              leading: const Icon(Icons.star, color: Colors.green),
-              title: const Text('Easy'),
-              trailing: Text(
-                easyScore.toString(),
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.star, color: Colors.orange),
-              title: const Text('Medium'),
-              trailing: Text(
-                mediumScore.toString(),
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.star, color: Colors.red),
-              title: const Text('Hard'),
-              trailing: Text(
-                hardScore.toString(),
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-            ),
-
             // Spacer for aesthetics
             const Spacer(),
             const Text(
               'Potion Mixup v1.0',
+              textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
             ),
           ],

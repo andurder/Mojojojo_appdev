@@ -227,126 +227,137 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Potion Mix-Up: ${widget.difficulty}')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('Score: $score',
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-
-            // History of Guesses
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListView.builder(
-                  itemCount: guessHistory.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(guessHistory[index]),
-                    );
-                  },
-                ),
-              ),
+        appBar: AppBar(title: Text('Potion Mix-Up: ${widget.difficulty}')),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  'assets/images/woodbg.png'), // Set your background image path here
+              fit: BoxFit.cover, // Cover the entire background
             ),
-            const SizedBox(height: 16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Score: $score',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
 
-            // Display Feedback Images
-            SizedBox(
-              height: 60, // Set a fixed height for the feedback area
-              child: Wrap(
-                spacing: 8.0, // Space between the images
-                alignment: WrapAlignment.center, // Center alignment
-                children: feedbackImages.map((image) {
-                  // Scale image size based on difficulty
-                  double size;
-                  switch (widget.difficulty) {
-                    case "Easy":
-                      size = 60.0; // Size for Easy difficulty
-                      break;
-                    case "Medium":
-                      size = 40.0; // Size for Medium difficulty
-                      break;
-                    case "Hard":
-                      size = 25.0; // Size for Hard difficulty
-                      break;
-                    default:
-                      size = 40.0; // Default size
-                  }
-                  return SizedBox(
-                    width: size,
-                    height: size,
-                    child: image,
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Ingredient Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(maxIngredients, (index) {
-                return Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (currentGuess.length < secretCode.length) {
-                        setState(() {
-                          currentGuess.add(index + 1);
-                        });
-                      }
-                    },
-                    child: Column(
-                      children: [
-                        const Icon(Icons.science),
-                        Text('${index + 1}')
-                      ],
+                // History of Guesses
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ListView.builder(
+                      itemCount: guessHistory.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(guessHistory[index]),
+                        );
+                      },
                     ),
                   ),
-                );
-              }),
-            ),
-            const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
 
-            // Submit Guess Button
-            ElevatedButton(
-              onPressed: () {
-                if (currentGuess.length == secretCode.length) {
-                  checkGuess();
-                } else {
-                  setState(() {
-                    feedback = "Please enter ${secretCode.length} ingredients.";
-                  });
-                }
-              },
-              child: const Text('Submit Guess'),
+                // Display Feedback Images
+                SizedBox(
+                  height: 60, // Set a fixed height for the feedback area
+                  child: Wrap(
+                    spacing: 8.0, // Space between the images
+                    alignment: WrapAlignment.center, // Center alignment
+                    children: feedbackImages.map((image) {
+                      // Scale image size based on difficulty
+                      double size;
+                      switch (widget.difficulty) {
+                        case "Easy":
+                          size = 60.0; // Size for Easy difficulty
+                          break;
+                        case "Medium":
+                          size = 40.0; // Size for Medium difficulty
+                          break;
+                        case "Hard":
+                          size = 25.0; // Size for Hard difficulty
+                          break;
+                        default:
+                          size = 40.0; // Default size
+                      }
+                      return SizedBox(
+                        width: size,
+                        height: size,
+                        child: image,
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Ingredient Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(maxIngredients, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (currentGuess.length < secretCode.length) {
+                            setState(() {
+                              currentGuess.add(index + 1);
+                            });
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            const Icon(Icons.science),
+                            Text('${index + 1}')
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 16),
+
+                // Submit Guess Button
+                ElevatedButton(
+                  onPressed: () {
+                    if (currentGuess.length == secretCode.length) {
+                      checkGuess();
+                    } else {
+                      setState(() {
+                        feedback =
+                            "Please enter ${secretCode.length} ingredients.";
+                      });
+                    }
+                  },
+                  child: const Text('Submit Guess'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      // Reset Game State
+                      currentGuess.clear();
+                      guessHistory.clear();
+                      feedback = "";
+                      feedbackImages
+                          .clear(); // Clear feedback images on restart
+                      score = widget.difficulty == "Hard"
+                          ? 1500
+                          : 1000; // Reset score
+                      generateSecretCode(
+                          maxIngredients); // Generate new secret code
+                    });
+                  },
+                  child: const Text('Restart'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  // Reset Game State
-                  currentGuess.clear();
-                  guessHistory.clear();
-                  feedback = "";
-                  feedbackImages.clear(); // Clear feedback images on restart
-                  score =
-                      widget.difficulty == "Hard" ? 1500 : 1000; // Reset score
-                  generateSecretCode(
-                      maxIngredients); // Generate new secret code
-                });
-              },
-              child: const Text('Restart'),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

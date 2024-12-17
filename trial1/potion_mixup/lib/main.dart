@@ -184,7 +184,16 @@ class MainDrawer extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const MyScoresPage()),
               );
             },
-            /* ADD HERE UNG ABOUT US BUT SA PINAKADULOOOOOOO */
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('About Us'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const Aboutus()),
+              );
+            },
           ),
         ],
       ),

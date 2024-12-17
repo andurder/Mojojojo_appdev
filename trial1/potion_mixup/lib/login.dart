@@ -17,13 +17,15 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Text('Email'),
               const TextField(
                 decoration: InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16.0),
+              const Text('Password'),
               const TextField(
                 obscureText: true,
                 decoration: InputDecoration(
