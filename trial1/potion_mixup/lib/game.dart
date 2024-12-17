@@ -106,7 +106,7 @@ class DifficultySelectionPage extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GamePage(difficulty: 'Easy'),
+                    builder: (context) => const GamePage(difficulty: 'Easy'),
                   ),
                 );
               },
@@ -117,7 +117,7 @@ class DifficultySelectionPage extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GamePage(difficulty: 'Medium'),
+                    builder: (context) => const GamePage(difficulty: 'Medium'),
                   ),
                 );
               },
@@ -128,7 +128,7 @@ class DifficultySelectionPage extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GamePage(difficulty: 'Hard'),
+                    builder: (context) => const GamePage(difficulty: 'Hard'),
                   ),
                 );
               },
@@ -229,7 +229,7 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
         appBar: AppBar(title: Text('Potion Mix-Up: ${widget.difficulty}')),
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage(
                   'assets/images/woodbg.png'), // Set your background image path here

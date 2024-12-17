@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'leaderboard.dart';
 import 'scores.dart';
@@ -7,12 +8,17 @@ import 'homepage.dart';
 import 'game.dart';
 import 'accounts.dart';
 import 'aboutus.dart';
+import 'login.dart';
 
-//import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp(); // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Initialize Firebase
   runApp(const PotionMixupApp());
 }
 
@@ -56,7 +62,8 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/logo.png', height: 150), // Placeholder for logo
+            Image.asset('icons/potionmixuop.png',
+                height: 150), // Placeholder for logo
             const SizedBox(height: 20),
             const Text('Potion Mixup',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -103,11 +110,21 @@ class LandingPage extends StatelessWidget {
   }
 }
 
-class MainDrawer extends StatelessWidget {
+class MainDrawer extends StatefulWidget {
   const MainDrawer({super.key});
 
   @override
+  _MainDrawerState createState() => _MainDrawerState();
+}
+
+class _MainDrawerState extends State<MainDrawer> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
   Widget build(BuildContext context) {
+    // Get the current user
+    final User? user = _auth.currentUser;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -124,14 +141,19 @@ class MainDrawer extends StatelessWidget {
               ),
             ),
           ),
-          const UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(
               color: Color(0xFFF15590),
             ),
-            accountName: Text('Andrea Nicole Dumanat'),
-            accountEmail: Text('andreanicole.dumanat.cics@ust.edu.ph'),
+            accountName: Text(user?.displayName ?? 'Login'),
+            accountEmail: Text(user?.email ?? ''),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('images/roku.jpg'),
+              backgroundImage: user != null
+                  ? const AssetImage('images/roku.jpg')
+                  : null, // Placeholder image
+              child: user == null
+                  ? const Icon(Icons.person, size: 40)
+                  : null, // Fallback icon if no user is logged in
             ),
           ),
           ListTile(
@@ -170,8 +192,7 @@ class MainDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const LeaderboardPage()),
+                MaterialPageRoute(builder: (context) => LeaderboardsPage()),
               );
             },
           ),
@@ -193,6 +214,19 @@ class MainDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => const Aboutus()),
               );
+            },
+          ),
+          const Divider(), // Optional divider for aesthetics
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Log Out'),
+            onTap: () async {
+              await _auth.signOut(); // Sign out the user
+              setState(() {}); // Update the UI to reflect logout
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LandingPage()),
+              ); // Redirect to Landing Page
             },
           ),
         ],
