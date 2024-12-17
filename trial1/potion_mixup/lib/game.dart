@@ -18,20 +18,6 @@ class LetsMixPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Potion Mix-Up: The Alchemist\'s Challenge',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Potion Mix-Up is an engaging guessing game inspired by the classic Bulls and Cows concept. Players take on the role of an alchemist, trying to brew the perfect potion by guessing the correct combination of magical ingredients from a selection of six options.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              const Text(
                 'Difficulty Levels:',
                 style: TextStyle(
                   fontSize: 20,
@@ -95,7 +81,9 @@ class LetsMixPage extends StatelessWidget {
 }
 
 class GamePage extends StatefulWidget {
-  const GamePage({super.key});
+  final String difficulty;
+
+  const GamePage({super.key, required this.difficulty});
 
   @override
   _GamePageState createState() => _GamePageState();
@@ -106,9 +94,10 @@ class _GamePageState extends State<GamePage> {
   List<int> secretCode = [];
   List<int> currentGuess = [];
   List<String> guessHistory = [];
-  int maxIngredients = 6; // Adjusts based on difficulty
+  int maxIngredients = 6;
   String feedback = "";
-  String selectedDifficulty = "Medium"; // Default difficulty
+  int score = 1000; // Start with base score
+  int penalty = 50; // Points lost per guess
 
   void generateSecretCode(int length) {
     List<int> symbols = List.generate(maxIngredients, (index) => index + 1);
@@ -129,81 +118,78 @@ class _GamePageState extends State<GamePage> {
     }
 
     setState(() {
-      feedback = "Potion Bottles: $potionBottles, Empty Flasks: $emptyFlasks";
+      if (potionBottles == secretCode.length) {
+        feedback = "You Won! Final Score: $score";
+      } else {
+        feedback = "Potion Bottles: $potionBottles, Empty Flasks: $emptyFlasks";
+        score -= penalty; // Deduct penalty for each guess
+      }
       guessHistory.add("Guess: ${currentGuess.join(", ")} | $feedback");
       currentGuess.clear();
     });
   }
 
-  void setDifficulty(String difficulty) {
-    setState(() {
-      selectedDifficulty = difficulty;
-      switch (difficulty) {
-        case "Easy":
-          maxIngredients = 3;
-          break;
-        case "Medium":
-          maxIngredients = 4;
-          break;
-        case "Hard":
-          maxIngredients = 6;
-          break;
-      }
-      currentGuess.clear();
-      feedback = "";
-      guessHistory.clear();
-      generateSecretCode(maxIngredients);
-    });
+  void setDifficulty() {
+    switch (widget.difficulty) {
+      case "Easy":
+        maxIngredients = 3;
+        break;
+      case "Medium":
+        maxIngredients = 4;
+        break;
+      case "Hard":
+        maxIngredients = 6;
+        score = 1500; // Higher starting score for Hard
+        break;
+    }
+    generateSecretCode(maxIngredients);
   }
 
   @override
   void initState() {
     super.initState();
-    setDifficulty("Medium"); // Initialize with Medium difficulty
+    setDifficulty();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Potion Mix-Up Game')),
+      appBar: AppBar(title: Text('Potion Mix-Up: ${widget.difficulty}')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Difficulty: $selectedDifficulty',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.purple,
+            Text('Score: $score',
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+
+            // History of Guesses
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ListView.builder(
+                itemCount: guessHistory.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(guessHistory[index]),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16),
-            DropdownButton<String>(
-              value: selectedDifficulty,
-              items: ["Easy", "Medium", "Hard"].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                if (newValue != null) {
-                  setDifficulty(newValue);
-                }
-              },
-            ),
-            const SizedBox(height: 16),
+
             Text(
               feedback,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
+              style: const TextStyle(fontSize: 18, color: Colors.red),
             ),
             const SizedBox(height: 16),
+
+            // Ingredient Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(maxIngredients, (index) {
@@ -219,7 +205,7 @@ class _GamePageState extends State<GamePage> {
                     },
                     child: Column(
                       children: [
-                        const Icon(Icons.science), // Placeholder icon
+                        const Icon(Icons.science),
                         Text('${index + 1}')
                       ],
                     ),
@@ -228,47 +214,79 @@ class _GamePageState extends State<GamePage> {
               }),
             ),
             const SizedBox(height: 16),
-            Text(
-              'Your Guess: ${currentGuess.join(", ")}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 16),
+
+            // Submit Guess Button
             ElevatedButton(
               onPressed: () {
                 if (currentGuess.length == secretCode.length) {
                   checkGuess();
                 } else {
                   setState(() {
-                    feedback =
-                        "Incomplete guess. Please enter ${secretCode.length} numbers.";
+                    feedback = "Please enter ${secretCode.length} ingredients.";
                   });
                 }
               },
               child: const Text('Submit Guess'),
             ),
-            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DifficultySelectionPage extends StatelessWidget {
+  const DifficultySelectionPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Select Difficulty')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Choose Your Difficulty',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  currentGuess.clear();
-                  generateSecretCode(
-                      maxIngredients); // Regenerate the secret code
-                  feedback = "";
-                  guessHistory.clear();
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GamePage(difficulty: 'Easy'),
+                  ),
+                );
               },
-              child: const Text('Reset Game'),
+              child: const Text('Easy'),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: guessHistory.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(guessHistory[index]),
-                  );
-                },
-              ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GamePage(difficulty: 'Medium'),
+                  ),
+                );
+              },
+              child: const Text('Medium'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GamePage(difficulty: 'Hard'),
+                  ),
+                );
+              },
+              child: const Text('Hard'),
             ),
           ],
         ),
