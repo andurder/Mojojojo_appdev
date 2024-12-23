@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'main.dart';
 import 'homepage.dart';
 import 'registration.dart'; // Import the registration page
 
@@ -15,7 +13,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -66,37 +63,23 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   } on FirebaseAuthException catch (e) {
                     // Handle error here
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.message ?? 'Login failed')),
+                    );
                   }
                 },
                 child: const Text('Login'),
               ),
+              const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {
-                  try {
-                    UserCredential userCredential =
-                        await _auth.createUserWithEmailAndPassword(
-                      email: _emailController.text.trim(),
-                      password: _passwordController.text.trim(),
-                    );
-
-                    // Create a default score document for the new user
-                    await _firestore
-                        .collection('scores')
-                        .doc(userCredential.user!.uid)
-                        .set({
-                      'EasyScore': 0,
-                      'MediumScore': 0,
-                      'HardScore': 0,
-                    });
-
-                    // Navigate to the homepage
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                  } on FirebaseAuthException catch (e) {
-                    // Handle error here
-                  }
+                onPressed: () {
+                  // Navigate to the registration page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegistrationPage(),
+                    ),
+                  );
                 },
                 child: const Text('Register'),
               ),

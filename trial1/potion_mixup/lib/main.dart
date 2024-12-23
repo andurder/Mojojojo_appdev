@@ -8,7 +8,6 @@ import 'homepage.dart';
 import 'game.dart';
 import 'accounts.dart';
 import 'aboutus.dart';
-import 'login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
@@ -16,9 +15,7 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  ); // Initialize Firebase
+  await Firebase.initializeApp();
   runApp(const PotionMixupApp());
 }
 
@@ -90,7 +87,8 @@ class LandingPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Description placeholder for Potion Mixup.',
+              const Text(
+                  'Become a master alchemist and concoct the winning elixir in Potion Mix-Up! This captivating game, inspired by the classic Bulls and Cows, challenges you to decipher the secret recipe by guessing the correct combination of magical ingredients.',
                   style: TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -145,16 +143,8 @@ class _MainDrawerState extends State<MainDrawer> {
             decoration: const BoxDecoration(
               color: Color(0xFFF15590),
             ),
-            accountName: Text(user?.displayName ?? 'Login'),
+            accountName: Text(user?.displayName ?? ''),
             accountEmail: Text(user?.email ?? ''),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: user != null
-                  ? const AssetImage('images/roku.jpg')
-                  : null, // Placeholder image
-              child: user == null
-                  ? const Icon(Icons.person, size: 40)
-                  : null, // Fallback icon if no user is logged in
-            ),
           ),
           ListTile(
             leading: const Icon(Icons.home),

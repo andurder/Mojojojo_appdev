@@ -1,75 +1,46 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'main.dart';
-
-class LeaderboardEntry {
-  final String userName;
-  final int easyScore;
-  final int mediumScore;
-  final int hardScore;
-
-  LeaderboardEntry({
-    required this.userName,
-    required this.easyScore,
-    required this.mediumScore,
-    required this.hardScore,
-  });
-
-  factory LeaderboardEntry.fromFirestore(Map<String, dynamic> data) {
-    return LeaderboardEntry(
-      userName: data['UserName'] ?? '',
-      easyScore: data['EasyScore'] ?? 0,
-      mediumScore: data['MediumScore'] ?? 0,
-      hardScore: data['HardScore'] ?? 0,
-    );
-  }
-}
-
-class LeaderboardService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Stream<List<LeaderboardEntry>> getLeaderboard(String difficulty) {
-    final difficultyField = difficulty[0].toUpperCase() +
-        difficulty.substring(1) +
-        'Score'; // Capitalize difficulty and add "Score"
-    return _firestore
-        .collection('Scores') // Updated collection name
-        .orderBy(difficultyField,
-            descending: true) // Sort by the selected difficulty field
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => LeaderboardEntry.fromFirestore(
-                doc.data() as Map<String, dynamic>))
-            .toList());
-  }
-}
+import 'package:flutter/material.dart';
 
 class LeaderboardsPage extends StatefulWidget {
+  const LeaderboardsPage({super.key});
+
   @override
   _LeaderboardsPageState createState() => _LeaderboardsPageState();
 }
 
 class _LeaderboardsPageState extends State<LeaderboardsPage> {
-  String selectedDifficulty = 'Easy'; // Default difficulty
+  String _selectedDifficulty = 'easy'; // Default difficulty
+  final List<String> _difficulties = ['easy', 'medium', 'hard'];
+
+  // A mapping from the difficulty level to the respective Firestore field
+  String getScoreField(String difficulty) {
+    switch (difficulty) {
+      case 'easy':
+        return 'eScore';
+      case 'medium':
+        return 'mScore';
+      case 'hard':
+        return 'hScore';
+      default:
+        return 'eScore'; // Default to easy if something goes wrong
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Leaderboard'),
+        title: const Text('Leaderboards'),
         actions: [
-          // Dropdown for difficulty selection
           DropdownButton<String>(
-            value: selectedDifficulty,
-            icon: Icon(Icons.arrow_downward),
+            value: _selectedDifficulty,
+            icon: const Icon(Icons.arrow_drop_down),
             onChanged: (String? newValue) {
               setState(() {
-                selectedDifficulty = newValue!;
+                _selectedDifficulty = newValue!;
               });
             },
-            items: <String>['Easy', 'Medium', 'Hard']
-                .map<DropdownMenuItem<String>>((String value) {
+            items: _difficulties.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
@@ -78,106 +49,63 @@ class _LeaderboardsPageState extends State<LeaderboardsPage> {
           ),
         ],
       ),
-      drawer: MainDrawer(),
-      body: StreamBuilder<List<LeaderboardEntry>>(
-        stream: LeaderboardService()
-            .getLeaderboard(selectedDifficulty.toLowerCase()),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('Users')
+            .orderBy(getScoreField(_selectedDifficulty), descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No scores available'));
           }
 
-          final leaderboard = snapshot.data!;
-          if (leaderboard.isEmpty) {
-            return Center(child: Text('No scores available.'));
-          }
+          final users = snapshot.data!.docs;
+
           return ListView.builder(
-            itemCount: leaderboard.length,
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              final entry = leaderboard[index];
-              final score = selectedDifficulty.toLowerCase() == 'easy'
-                  ? entry.easyScore
-                  : selectedDifficulty.toLowerCase() == 'medium'
-                      ? entry.mediumScore
-                      : entry.hardScore;
+              final user = users[index];
+              final score = user[getScoreField(
+                  _selectedDifficulty)]; // Access the score field correctly
+              final isTopThree = index < 3;
 
-              if (index == 0) {
-                // Top scorer
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0, horizontal: 16.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.amber[100], // Highlight color
-                      borderRadius: BorderRadius.circular(12.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // Shadow effect
-                        ),
-                      ],
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isTopThree
+                      ? (index == 0
+                          ? Colors.amber
+                          : (index == 1
+                              ? Colors.lightGreen
+                              : Colors.blueAccent))
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 50, // Larger avatar
-                          child: Text(
-                            '1',
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: Text(user['username'],
                             style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        SizedBox(height: 12.0), // Space between avatar and text
-                        Text(
-                          entry.userName,
-                          style: TextStyle(
-                            fontSize: 24, // Larger font size for top scorer
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Score: $score',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 12.0), // Space after the score
-                      ],
-                    ),
-                  ),
-                );
-              }
-
-              // For other entries
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      child: Text(
-                        '${index + 1}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    title: Text(entry.userName),
-                    subtitle: Text('Score: $score'),
-                  ),
+                                fontSize: isTopThree ? 24 : 16,
+                                fontWeight: isTopThree
+                                    ? FontWeight.bold
+                                    : FontWeight.normal))),
+                    Text(score.toString(),
+                        style: TextStyle(fontSize: isTopThree ? 24 : 16)),
+                  ],
                 ),
               );
             },

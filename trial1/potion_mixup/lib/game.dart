@@ -196,12 +196,12 @@ class _GamePageState extends State<GamePage> {
     for (int i = 0; i < currentGuess.length; i++) {
       if (currentGuess[i] == secretCode[i]) {
         potionBottles++;
-        feedbackImages
-            .add(Image.asset('icons/correct.png', width: 60, height: 60));
+        feedbackImages.add(
+            Image.asset('assets/icons/correct.png', width: 60, height: 60));
       } else if (secretCode.contains(currentGuess[i])) {
         emptyFlasks++;
         feedbackImages
-            .add(Image.asset('icons/empty.png', width: 60, height: 60));
+            .add(Image.asset('assets/icons/empty.png', width: 60, height: 60));
       }
     }
 

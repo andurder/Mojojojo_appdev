@@ -68,6 +68,8 @@ flutter:
     - assets/images/image2.jpg
     - assets/images/image3.jpg
     - assets/images/woodbg.png
+    - assets/images/bg1.png
     - assets/icons/potionmixuop.png
     - assets/icons/correct.png
     - assets/icons/empty.png
+    - assets/icons/bulls.png

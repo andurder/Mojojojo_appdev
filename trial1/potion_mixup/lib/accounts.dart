@@ -51,10 +51,10 @@ class _AccountPageState extends State<AccountPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Welcome, $username!',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -66,7 +66,7 @@ class _AccountPageState extends State<AccountPage> {
               Text('Hard Score: ${userScores!['HardScore']}'),
             ],
             const Spacer(),
-            Text(
+            const Text(
               'Potion Mixup v1.0',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
