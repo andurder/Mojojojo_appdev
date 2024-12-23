@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
             // Use RotationTransition for spinning effect
             RotationTransition(
               turns: _controller,
-              child: Image.asset('icons/potionmixuop.png',
+              child: Image.asset('assets/icons/potionmixuop.png',
                   height: 150), // Placeholder for logo
             ),
             const SizedBox(height: 20),
@@ -130,7 +130,7 @@ class LandingPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'icons/potionmixuop.png', // Replace with your potion icon path
+                    'assets/icons/potionmixuop.png', // Replace with your potion icon path
                     height: 100,
                   ),
                   const SizedBox(height: 20),

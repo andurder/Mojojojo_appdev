@@ -57,7 +57,7 @@ class _LeaderboardsPageState extends State<LeaderboardsPage> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'images/lb.png', // Replace with your asset path
+              'assets/images/lb.png', // Replace with your asset path
               fit: BoxFit.cover,
             ),
           ),
