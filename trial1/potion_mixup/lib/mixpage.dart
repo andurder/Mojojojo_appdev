@@ -17,60 +17,59 @@ class LetsMixPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Let\'s Mix!')),
       drawer: const MainDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Container(
+        color: const Color.fromARGB(255, 188, 119,
+            209), // Change to your preferred light background color
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Game Mechanics:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple,
+              _buildSectionTitle('Game Mechanics'),
+              _buildContainer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Each guess provides feedback through:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '• "Green Potion": Correct ingredient and position.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '• "Yellow Potion": Correct ingredient but wrong position.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '• "Empty Flasks": Wrong ingredient and wrong position.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Each guess provides feedback through:',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• "Green Potion": Correct ingredient and position.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• "Yellow Potion": Correct ingredient but wrong position.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• "Empty Flasks": Wrong ingredient and wrong position.',
-                style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Difficulty Levels:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple,
+              _buildSectionTitle('Difficulty Levels'),
+              _buildContainer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      '• Easy (3 ingredients): Suitable for beginners.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '• Medium (4 ingredients): Standard challenge for most players.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '• Hard (6 ingredients): A complex puzzle for experienced gamers.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                '• Easy (3 ingredients): Suitable for beginners.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• Medium (4 ingredients): Standard challenge for most players.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• Hard (6 ingredients): A complex puzzle for experienced gamers.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
               const SizedBox(height: 24),
               Center(
                 child: ElevatedButton(
@@ -92,6 +91,38 @@ class LetsMixPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87, // Use a readable color
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContainer({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.purple.shade50, // Soft purple background for containers
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2), // Shadow position
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: child,
+    );
+  }
 }
 
 class DifficultySelectionPage extends StatelessWidget {
@@ -103,58 +134,44 @@ class DifficultySelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Select Difficulty')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Choose Your Difficulty',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.purple,
+      body: Container(
+        color: const Color.fromARGB(255, 188, 119,
+            209), // Change to your preferred light background color
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Choose Your Difficulty',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87, // Use a readable color
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        GamePage(difficulty: 'Easy', uid: uid),
-                  ),
-                );
-              },
-              child: const Text('Easy'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        GamePage(difficulty: 'Medium', uid: uid),
-                  ),
-                );
-              },
-              child: const Text('Medium'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        GamePage(difficulty: 'Hard', uid: uid),
-                  ),
-                );
-              },
-              child: const Text('Hard'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              _buildDifficultyButton(context, 'Easy'),
+              _buildDifficultyButton(context, 'Medium'),
+              _buildDifficultyButton(context, 'Hard'),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  ElevatedButton _buildDifficultyButton(
+      BuildContext context, String difficulty) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GamePage(difficulty: difficulty, uid: uid),
+          ),
+        );
+      },
+      child: Text(difficulty),
     );
   }
 }

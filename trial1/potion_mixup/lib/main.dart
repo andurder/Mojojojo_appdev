@@ -45,16 +45,33 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 1), () {
+    // Initialize the AnimationController
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // Duration of one full rotation
+      vsync: this,
+    )..repeat(); // Repeat the animation
+
+    // Navigate to the LandingPage after 5 seconds
+    Timer(const Duration(seconds: 5), () {
+      _controller.dispose(); // Dispose of the controller
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LandingPage()),
       );
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Clean up the controller
+    super.dispose();
   }
 
   @override
@@ -64,8 +81,12 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('icons/potionmixuop.png',
-                height: 150), // Placeholder for logo
+            // Use RotationTransition for spinning effect
+            RotationTransition(
+              turns: _controller,
+              child: Image.asset('icons/potionmixuop.png',
+                  height: 150), // Placeholder for logo
+            ),
             const SizedBox(height: 20),
             const Text('Potion Mixup',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -84,32 +105,75 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Welcome to Potion Mixup!')),
-      drawer: const MainDrawer(),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                  'Become a master alchemist and concoct the winning elixir in Potion Mix-Up! This captivating game, inspired by the classic Bulls and Cows, challenges you to decipher the secret recipe by guessing the correct combination of magical ingredients.',
-                  style: TextStyle(fontSize: 16)),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
-                child: const Text('Get Started'),
-              ),
-            ],
+        appBar: AppBar(
+          title: const Text(
+            'Welcome to Potion Mixup!',
+            textAlign: TextAlign.center,
           ),
+          backgroundColor: Colors.deepPurple[800],
         ),
-      ),
-    );
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black,
+                Colors.deepPurple,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'icons/potionmixuop.png', // Replace with your potion icon path
+                    height: 100,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    '🧙‍♀️ Become a Master Alchemist 🧙‍♂️\n'
+                    'Concoct the winning elixir in Potion Mix-Up! This captivating game, inspired by the classic Bulls and Cows, challenges you to decipher the secret recipe by guessing the correct combination of magical ingredients.',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          color: Colors.black,
+                          offset: Offset(2.0, 2.0),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber[700], // Button color
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                      textStyle: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    child: const Text('Get Started'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }
 
@@ -165,9 +229,16 @@ class _MainDrawerState extends State<MainDrawer> {
             ),
           ),
           UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFFF15590)),
-            accountName: Text(username ?? 'Loading...'),
-            accountEmail: Text(user?.email ?? ''),
+            decoration:
+                const BoxDecoration(color: Color.fromARGB(255, 39, 73, 50)),
+            accountName: Text(
+              username ?? 'Loading...',
+              style: TextStyle(color: Colors.white),
+            ),
+            accountEmail: Text(
+              user?.email ?? '',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.home),
