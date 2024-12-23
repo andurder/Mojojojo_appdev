@@ -46,7 +46,8 @@ class _AccountPageState extends State<AccountPage> {
         centerTitle: true,
       ),
       drawer: const MainDrawer(),
-      body: Padding(
+      body: Container(
+        color: Colors.grey[200], // Soft background color
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,15 +62,56 @@ class _AccountPageState extends State<AccountPage> {
             ),
             const SizedBox(height: 20),
             if (userScores != null) ...[
-              Text('Easy Score: ${userScores!['eScore']}'),
-              Text('Medium Score: ${userScores!['mScore']}'),
-              Text('Hard Score: ${userScores!['hScore']}'),
+              _buildScoreCard('Easy Score', userScores!['eScore']),
+              const SizedBox(height: 16),
+              _buildScoreCard('Medium Score', userScores!['mScore']),
+              const SizedBox(height: 16),
+              _buildScoreCard('Hard Score', userScores!['hScore']),
+            ] else ...[
+              const CircularProgressIndicator(), // Loading indicator while fetching scores
             ],
             const Spacer(),
             const Text(
               'Potion Mixup v1.0',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScoreCard(String title, int? score) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.star, color: Colors.amber[600]), // Icon for scores
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              score != null ? score.toString() : 'N/A',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

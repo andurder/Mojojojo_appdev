@@ -36,9 +36,9 @@ class Aboutus extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildImage("images/image1.jpg"),
-                  _buildImage("images/image2.jpg"),
-                  _buildImage("images/image3.jpg"),
+                  _buildImage("assets/images/image1.jpg"),
+                  _buildImage("assets/images/image2.jpg"),
+                  _buildImage("assets/images/image3.jpg"),
                 ],
               ),
               const SizedBox(height: 50),

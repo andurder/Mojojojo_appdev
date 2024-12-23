@@ -39,11 +39,7 @@ class LetsMixPage extends StatelessWidget {
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      '• "Yellow Potion": Correct ingredient but wrong position.',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '• "Empty Flasks": Wrong ingredient and wrong position.',
+                      '• "Empty Flasks": Correct ingredient but wrong position.',
                       style: TextStyle(fontSize: 16),
                     ),
                   ],

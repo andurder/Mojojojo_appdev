@@ -286,16 +286,6 @@ class _MainDrawerState extends State<MainDrawer> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.score),
-            title: const Text('My Scores'),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const MyScoresPage()),
-              );
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.info),
             title: const Text('About Us'),
             onTap: () {
