@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'main.dart';
 
 class LeaderboardsPage extends StatefulWidget {
   const LeaderboardsPage({super.key});
@@ -49,6 +52,7 @@ class _LeaderboardsPageState extends State<LeaderboardsPage> {
           ),
         ],
       ),
+      drawer: const MainDrawer(), // Add the drawer here
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('Users')
@@ -68,8 +72,7 @@ class _LeaderboardsPageState extends State<LeaderboardsPage> {
             itemCount: users.length,
             itemBuilder: (context, index) {
               final user = users[index];
-              final score = user[getScoreField(
-                  _selectedDifficulty)]; // Access the score field correctly
+              final score = user[getScoreField(_selectedDifficulty)];
               final isTopThree = index < 3;
 
               return Container(
@@ -97,12 +100,13 @@ class _LeaderboardsPageState extends State<LeaderboardsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                        child: Text(user['username'],
-                            style: TextStyle(
-                                fontSize: isTopThree ? 24 : 16,
-                                fontWeight: isTopThree
-                                    ? FontWeight.bold
-                                    : FontWeight.normal))),
+                      child: Text(user['username'],
+                          style: TextStyle(
+                              fontSize: isTopThree ? 24 : 16,
+                              fontWeight: isTopThree
+                                  ? FontWeight.bold
+                                  : FontWeight.normal)),
+                    ),
                     Text(score.toString(),
                         style: TextStyle(fontSize: isTopThree ? 24 : 16)),
                   ],

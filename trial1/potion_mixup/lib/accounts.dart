@@ -28,7 +28,7 @@ class _AccountPageState extends State<AccountPage> {
     if (user != null) {
       // Fetch the user's scores from Firestore
       DocumentSnapshot scoresSnapshot =
-          await _firestore.collection('scores').doc(user.uid).get();
+          await _firestore.collection('Users').doc(user.uid).get();
 
       setState(() {
         userScores = scoresSnapshot.data() as Map<String, dynamic>?;
@@ -61,9 +61,9 @@ class _AccountPageState extends State<AccountPage> {
             ),
             const SizedBox(height: 20),
             if (userScores != null) ...[
-              Text('Easy Score: ${userScores!['EasyScore']}'),
-              Text('Medium Score: ${userScores!['MediumScore']}'),
-              Text('Hard Score: ${userScores!['HardScore']}'),
+              Text('Easy Score: ${userScores!['eScore']}'),
+              Text('Medium Score: ${userScores!['mScore']}'),
+              Text('Hard Score: ${userScores!['hScore']}'),
             ],
             const Spacer(),
             const Text(

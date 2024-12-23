@@ -1,151 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Add this for persistent storage
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'main.dart';
 
-class LetsMixPage extends StatelessWidget {
-  const LetsMixPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Let\'s Mix!')),
-      drawer: const MainDrawer(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Difficulty Levels:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '• Easy (3 ingredients): Suitable for beginners.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• Medium (4 ingredients): Standard challenge for most players.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• Hard (6 ingredients): A complex puzzle for experienced gamers.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Game Mechanics:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Each guess provides feedback through:',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• "Potion Bottles": Correct ingredient and position.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const Text(
-                '• "Empty Flasks": Correct ingredient but wrong position.',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const DifficultySelectionPage()),
-                    );
-                  },
-                  child: const Text('Start Brewing!'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DifficultySelectionPage extends StatelessWidget {
-  const DifficultySelectionPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Select Difficulty')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Choose Your Difficulty',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.purple,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const GamePage(difficulty: 'Easy'),
-                  ),
-                );
-              },
-              child: const Text('Easy'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const GamePage(difficulty: 'Medium'),
-                  ),
-                );
-              },
-              child: const Text('Medium'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const GamePage(difficulty: 'Hard'),
-                  ),
-                );
-              },
-              child: const Text('Hard'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class GamePage extends StatefulWidget {
   final String difficulty;
+  final String uid;
 
-  const GamePage({super.key, required this.difficulty});
+  const GamePage({super.key, required this.difficulty, required this.uid});
 
   @override
   _GamePageState createState() => _GamePageState();
@@ -158,10 +20,10 @@ class _GamePageState extends State<GamePage> {
   List<String> guessHistory = [];
   int maxIngredients = 6;
   String feedback = "";
-  int score = 0; // Cumulative score
-  int roundScore = 1000; // Base score for the round
-  int penalty = 50; // Points lost per guess
-  int highScore = 0; // Persistent high score
+  int score = 0;
+  int roundScore = 1000;
+  int penalty = 50;
+  int highScore = 0;
   List<Widget> feedbackImages = [];
 
   void generateSecretCode(int length) {
@@ -171,19 +33,44 @@ class _GamePageState extends State<GamePage> {
   }
 
   Future<void> loadHighScore() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      highScore = prefs.getInt('highScore_${widget.difficulty}') ?? 0;
-    });
+    // Load high score from Firestore
+    final userDoc = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(widget.uid)
+        .get();
+    if (userDoc.exists) {
+      setState(() {
+        highScore = userDoc.data()![getScoreField(widget.difficulty)] ?? 0;
+      });
+    }
   }
 
   Future<void> updateHighScore() async {
     if (score > highScore) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
         highScore = score;
-        prefs.setInt('highScore_${widget.difficulty}', highScore);
       });
+
+      // Update high score in Firestore
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(widget.uid)
+          .update({
+        getScoreField(widget.difficulty): highScore,
+      });
+    }
+  }
+
+  String getScoreField(String difficulty) {
+    switch (difficulty) {
+      case 'Easy':
+        return 'eScore';
+      case 'Medium':
+        return 'mScore';
+      case 'Hard':
+        return 'hScore';
+      default:
+        return 'eScore'; // Default to easy if something goes wrong
     }
   }
 
@@ -196,27 +83,50 @@ class _GamePageState extends State<GamePage> {
     for (int i = 0; i < currentGuess.length; i++) {
       if (currentGuess[i] == secretCode[i]) {
         potionBottles++;
-        feedbackImages.add(
-            Image.asset('assets/icons/correct.png', width: 60, height: 60));
+        feedbackImages.add(Image.asset('assets/icons/correct.png',
+            width: 40, height: 40)); // Reduced size
       } else if (secretCode.contains(currentGuess[i])) {
         emptyFlasks++;
-        feedbackImages
-            .add(Image.asset('assets/icons/empty.png', width: 60, height: 60));
+        feedbackImages.add(Image.asset('assets/icons/empty.png',
+            width: 40, height: 40)); // Reduced size
       }
     }
 
     setState(() {
       if (potionBottles == secretCode.length) {
         feedback = "You Won! Final Score: $score";
-        updateHighScore(); // Check and update high score if necessary
+        showWinPrompt();
       } else {
-        feedback = "Potion Bottles: $potionBottles, Empty Flasks: $emptyFlasks";
-        roundScore -= penalty; // Deduct penalty for incorrect guesses
-        if (roundScore < 0) roundScore = 0; // Ensure no negative score
+        roundScore -= penalty;
+        if (roundScore < 0) roundScore = 0;
       }
-      guessHistory.add("Guess: ${currentGuess.join("")} | $feedback");
+      guessHistory.add("Guess:   ${currentGuess.join("  ")}");
       currentGuess.clear();
     });
+  }
+
+  Future<void> showWinPrompt() async {
+    await updateHighScore();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('You Won!'),
+          content: Text('Your score: $score\nHigh score: $highScore'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(
+                    context); // Navigate back to main menu or difficulty selection
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void setDifficulty() {
@@ -332,29 +242,48 @@ class _GamePageState extends State<GamePage> {
               ),
               const SizedBox(height: 16),
               // Ingredient buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(maxIngredients, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (currentGuess.length < secretCode.length) {
-                          setState(() {
-                            currentGuess.add(index + 1);
-                          });
-                        }
-                      },
-                      child: Column(
-                        children: [
-                          const Icon(Icons.science),
-                          Text('${index + 1}')
-                        ],
-                      ),
+              widget.difficulty == "Hard"
+                  ? Column(
+                      children: [
+                        Wrap(
+                          spacing: 8.0,
+                          alignment: WrapAlignment.center,
+                          children: List.generate(maxIngredients, (index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (currentGuess.length < secretCode.length) {
+                                    setState(() {
+                                      currentGuess.add(index + 1);
+                                    });
+                                  }
+                                },
+                                child: Text('${index + 1}'),
+                              ),
+                            );
+                          }),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(maxIngredients, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (currentGuess.length < secretCode.length) {
+                                setState(() {
+                                  currentGuess.add(index + 1);
+                                });
+                              }
+                            },
+                            child: Text('${index + 1}'),
+                          ),
+                        );
+                      }),
                     ),
-                  );
-                }),
-              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'leaderboard.dart';
 import 'scores.dart';
@@ -8,6 +9,7 @@ import 'homepage.dart';
 import 'game.dart';
 import 'accounts.dart';
 import 'aboutus.dart';
+import 'mixpage.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
@@ -15,7 +17,10 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const PotionMixupApp());
 }
 
@@ -117,10 +122,30 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsername();
+  }
+
+  Future<void> fetchUsername() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
+      setState(() {
+        username =
+            doc.data()?['username'] ?? user.displayName ?? 'Unknown User';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Get the current user
     final User? user = _auth.currentUser;
 
     return Drawer(
@@ -140,10 +165,8 @@ class _MainDrawerState extends State<MainDrawer> {
             ),
           ),
           UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(
-              color: Color(0xFFF15590),
-            ),
-            accountName: Text(user?.displayName ?? ''),
+            decoration: const BoxDecoration(color: Color(0xFFF15590)),
+            accountName: Text(username ?? 'Loading...'),
             accountEmail: Text(user?.email ?? ''),
           ),
           ListTile(
@@ -160,10 +183,15 @@ class _MainDrawerState extends State<MainDrawer> {
             leading: const Icon(Icons.science),
             title: const Text('Let\'s Mix!'),
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LetsMixPage()),
-              );
+              final User? user = _auth.currentUser;
+              if (user != null) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LetsMixPage(uid: user.uid),
+                  ),
+                );
+              }
             },
           ),
           ListTile(

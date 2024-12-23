@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'homepage.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -18,7 +19,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
-
   Future<void> _registerUser() async {
     final username = _usernameController.text.trim();
     final email = _emailController.text.trim();
@@ -53,8 +53,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
         'hScore': 0,
       });
 
-      // Navigate to leaderboard page or home
-      Navigator.pushReplacementNamed(context, '/leaderboard');
+      // Clear text fields
+      _usernameController.clear();
+      _emailController.clear();
+      _passwordController.clear();
+
+      // Navigate to HomePage directly
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
